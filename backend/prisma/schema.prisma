@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model University {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  website     String
+
+  admissions  Admission[]
+  scholarships Scholarship[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Admission {
+  id            Int @id @default(autoincrement())
+
+  universityId  Int
+  details       String
+  eligibility   String
+  tuitionFees   String
+
+  university University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+}
+
+model Scholarship {
+  id            Int @id @default(autoincrement())
+  universityId  Int
+  details       String
+
+  university University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+}

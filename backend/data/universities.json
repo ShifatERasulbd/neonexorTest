@@ -1,0 +1,12 @@
+[
+  {
+    "name": "University of Oxford",
+    "slug": "oxford",
+    "website": "https://www.ox.ac.uk/admissions"
+  },
+  {
+    "name": "MIT",
+    "slug": "mit",
+    "website": "https://www.mit.edu/admissions-aid/"
+  }
+]
