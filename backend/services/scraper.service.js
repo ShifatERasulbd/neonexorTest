@@ -1,17 +1,29 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-function extractByKeywords(text, keywords) {
-  const lines = text
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
+function cleanText(text) {
+  return text
+    .replace(/\s+/g, " ")
+    .replace(/[^a-zA-Z0-9\s.,]/g, "")
+    .trim();
+}
 
-  const matched = lines.filter((line) =>
-    keywords.some((keyword) => line.toLowerCase().includes(keyword))
-  );
+function extractSentencesByKeywords(text, keywords) {
+  const sentences = text
+    .split(/[\.\!\?]+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 15);
 
-  return matched.slice(0, 12).join(" | ") || "Not available";
+  const matched = [];
+  for (const sentence of sentences) {
+    if (keywords.some((kw) => sentence.toLowerCase().includes(kw.toLowerCase()))) {
+      matched.push(sentence);
+      if (matched.length >= 2) break;
+    }
+  }
+
+  const result = matched.slice(0, 2).join(". ");
+  return result.length > 0 ? result + "." : "Not available";
 }
 
 async function scrapeUniversityDetails(url) {
@@ -24,29 +36,34 @@ async function scrapeUniversityDetails(url) {
   });
 
   const $ = cheerio.load(response.data);
-  const bodyText = $("body").text().replace(/\s+/g, " ");
+  $("script, style, nav, footer, noscript").remove();
+  const bodyText = cleanText($("body").text());
 
-  const admissionDetails = extractByKeywords(bodyText, [
+  const admissionDetails = extractSentencesByKeywords(bodyText, [
     "admission",
     "application",
     "deadline",
+    "apply",
   ]);
 
-  const eligibility = extractByKeywords(bodyText, [
+  const eligibility = extractSentencesByKeywords(bodyText, [
     "eligibility",
-    "requirements",
+    "requirement",
     "qualification",
+    "qualify",
   ]);
 
-  const tuitionFees = extractByKeywords(bodyText, [
+  const tuitionFees = extractSentencesByKeywords(bodyText, [
     "tuition",
     "fee",
     "cost",
+    "price",
   ]);
 
-  const scholarshipDetails = extractByKeywords(bodyText, [
+  const scholarshipDetails = extractSentencesByKeywords(bodyText, [
     "scholarship",
     "financial aid",
+    "grant",
     "funding",
   ]);
 
