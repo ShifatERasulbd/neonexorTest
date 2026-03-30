@@ -11,7 +11,7 @@ export default function HomePage() {
   const [error, setError] = useState("");
 
   const loadData = async () => {
-    setError("");
+    setError("");  
     try {
       const data = await fetchUniversities();
       setUniversities(data);
