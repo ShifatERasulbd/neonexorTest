@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchUniversities } from "@/lib/api";
+import { fetchUniversities, updateUniversity, deleteUniversity } from "@/lib/api";
 import ScrapeControls from "@/components/ScrapeControls";
 import UniversityTable from "@/components/UniversityTable";
 
@@ -19,6 +19,43 @@ export default function HomePage() {
       setError(e.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEdit = async (university) => {
+    const name = window.prompt("University name:", university.name);
+    if (name === null) return;
+
+    const slug = window.prompt("Slug:", university.slug);
+    if (slug === null) return;
+
+    const website = window.prompt("Website URL:", university.website);
+    if (website === null) return;
+
+    if (!name.trim() || !slug.trim() || !website.trim()) {
+      setError("Name, slug and website are required");
+      return;
+    }
+
+    try {
+      setError("");
+      await updateUniversity(university.id, { name: name.trim(), slug: slug.trim(), website: website.trim() });
+      await loadData();
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm("Delete this university? This action cannot be undone.");
+    if (!confirmed) return;
+
+    try {
+      setError("");
+      await deleteUniversity(id);
+      await loadData();
+    } catch (e) {
+      setError(e.message);
     }
   };
 
@@ -45,7 +82,7 @@ export default function HomePage() {
         </p>
       </section>
 
-      {loading ? <p>Loading data...</p> : <UniversityTable universities={universities} />}
+      {loading ? <p>Loading data...</p> : <UniversityTable universities={universities} onEdit={handleEdit} onDelete={handleDelete} />}
 
       {error ? (
         <div className="card" style={{ marginTop: 16, borderColor: "#fecaca" }}>

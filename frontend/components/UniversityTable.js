@@ -4,7 +4,7 @@ function truncateText(text, maxLength = 100) {
   return text.substring(0, maxLength).split(" ").slice(0, -1).join(" ") + "...";
 }
 
-export default function UniversityTable({ universities }) {
+export default function UniversityTable({ universities, onEdit, onDelete }) {
   if (!universities.length) {
     return <p>No data yet. Run scraping to populate the database.</p>;
   }
@@ -20,6 +20,7 @@ export default function UniversityTable({ universities }) {
               <th>Eligibility</th>
               <th>Tuition Fees</th>
               <th>Scholarship</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -48,6 +49,20 @@ export default function UniversityTable({ universities }) {
                   </td>
                   <td style={{ fontSize: 12, lineHeight: 1.4 }}>
                     {truncateText(scholarship?.details)}
+                  </td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
+                    <button
+                      onClick={() => onEdit(university)}
+                      style={{ marginRight: 8, padding: '4px 8px' }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => onDelete(university.id)}
+                      style={{ padding: '4px 8px', backgroundColor: '#ef4444', color: 'white' }}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               );

@@ -36,3 +36,31 @@ export async function scrapeSingleUniversity(body) {
 
   return payload;
 }
+
+export async function updateUniversity(id, body) {
+  const response = await fetch(`${API_URL}/universities/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  const payload = await response.json();
+  if (!response.ok) {
+    throw new Error(payload.error || "Update failed");
+  }
+
+  return payload;
+}
+
+export async function deleteUniversity(id) {
+  const response = await fetch(`${API_URL}/universities/${id}`, {
+    method: "DELETE",
+  });
+
+  const payload = await response.json();
+  if (!response.ok) {
+    throw new Error(payload.error || "Delete failed");
+  }
+
+  return payload;
+}
